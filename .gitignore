@@ -1,3 +1,4 @@
 .idea
 trained_model/
 assets
+*__pycache__*
