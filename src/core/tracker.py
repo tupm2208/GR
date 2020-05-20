@@ -18,6 +18,8 @@ class Tracker(correlation_tracker):
         self.track(rgb, location)
         self.img_h, self.img_w, _ = bgr.shape
         self.current_location = location
+        self.origin_vectors = []
+        self.augmented_vectors = []
 
     def custom_update(self, bgr, location=None, identity=None):
         rgb = cv2.cvtColor(bgr, cv2.COLOR_RGB2BGR)
@@ -89,7 +91,11 @@ class Tracker(correlation_tracker):
         return True
 
     def get_identity(self):
-        return self.trace[-1]
+        unique, count = np.unique(self.trace, return_counts=True)
+        if len(unique) == 1 or unique[0] != 'unknown' or count[0]/len(count) >= 0.9:
+            return unique[0]
+        else:
+            return unique[1]
 
     def is_match(self, locations):
         if len(locations) == 0:

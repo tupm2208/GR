@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.models.facebox.utils.box_utils import batch_decode
 from src.models.facebox.utils.nms import batch_non_max_suppression
-from src.config.default import anchors
+from src.config.default import anchors, SCORE_THRESHOLD
 
 
 def batch_norm():
@@ -298,7 +298,7 @@ class FaceBoxes(tf.keras.Model):
 
         return image
 
-    def get_predictions(self, box_encodings, cla, anchors, score_threshold=0.05, iou_threshold=0.3, max_boxes=100):
+    def get_predictions(self, box_encodings, cla, anchors, score_threshold=SCORE_THRESHOLD, iou_threshold=0.3, max_boxes=100):
         """Postprocess outputs of the network.
         Returns:
             boxes: a float tensor with shape [batch_size, N, 14].

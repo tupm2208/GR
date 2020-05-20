@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import time
 from src.models.facebox.net import FaceBoxes
+from src.config.default import MIN_FACE_SCORE
 
 
 class FaceDetector:
@@ -16,7 +17,7 @@ class FaceDetector:
         self.model = FaceBoxes()
         self.model.load_weights(model_path)
 
-    def __call__(self, image, score_threshold=0.5):
+    def __call__(self, image, score_threshold=MIN_FACE_SCORE):
         """Detect faces.
 
         Arguments:

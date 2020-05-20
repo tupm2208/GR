@@ -5,6 +5,7 @@ class Trackers:
     def __init__(self):
         self.track_list = []
         self.auto_increase = 0
+        self.user_dict_vectors = {}
 
     def update(self, bgr, locations, identities):
         matched_idxs = []
