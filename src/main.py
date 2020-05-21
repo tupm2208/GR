@@ -45,7 +45,7 @@ while True:
     counter_faces = faces[1]
 
     gate_face_images = get_image_face_from_bboxes(image, gate_faces)
-    counter_face_images = get_image_face_from_bboxes(image, counter_faces)
+    counter_face_images = get_image_face_from_bboxes(image2, counter_faces)
 
     face_images = gate_face_images + counter_face_images
 
@@ -77,5 +77,5 @@ while True:
             draw_image(loc, image2, tracker.get_identity())
 
         cv2.imshow('', image2)
-    # print(1/(time.time()-t1))
-    cv2.waitKey(0)
+    print(1/(time.time()-t1))
+    cv2.waitKey(1)

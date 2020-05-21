@@ -111,8 +111,8 @@ def handle_face_result(faces, face_categorizer, cut_face_categorizer, vectors):
     names = np.concatenate([names1, names1])
     scores = np.concatenate([scores1, scores1])
     embeddings = list(zip(vectors[:n_face], vectors[n_face:]))
-    print(names1)
-    print(scores1)
+    # print(names1)
+    # print(scores1)
     if len(names) != 0:
         names = names.tolist()
         for idx in range(len(scores)):

@@ -37,7 +37,7 @@ class FaceCategorizer:
             names.append(unique[max_id])
             counts.append(count[max_id])
 
-            print(unique, count)
+            # print(unique, count)
         return np.array(names), np.array(counts)
 
     def predict(self, embedding):

@@ -111,9 +111,9 @@ class Tracker(correlation_tracker):
             if min(len(chosen_vectors), 50) == 0:
                 return None
             step = len(chosen_vectors)//min(len(chosen_vectors), 50)
-        step = 1
+        # step = 1
         chosen_vectors = chosen_vectors[0::step]
-        print(chosen_vectors.shape, name)
+        # print(chosen_vectors.shape, name)
 
         identity = get_id_label() if name == 'unknown' else name
 
