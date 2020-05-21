@@ -24,6 +24,9 @@ ret1 = True
 ret2 = True
 shape1 = None
 
+fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+vw = cv2.VideoWriter('assets/output_videos/out_cpu.avi', fourcc, 30, (854, 480))
+
 while True:
     t1 = time.time()
 
@@ -62,8 +65,8 @@ while True:
         for tracker in trackers.track_list:
             loc = tracker.current_location
             draw_image(loc, image, tracker.get_identity())
+        out_img = image
 
-        cv2.imshow('', image)
     else:
         # gate_video = cv2.VideoCapture('/home/tupm/SSD/datasets/video_test/test/56354369654362717692.mp4')
         # face_categorizer = trackers.recognizer
@@ -76,6 +79,9 @@ while True:
             loc = tracker.current_location
             draw_image(loc, image2, tracker.get_identity())
 
-        cv2.imshow('', image2)
-    print(1/(time.time()-t1))
+        out_img = image2
+    fps = int(1 / (time.time() - t1))
+    cv2.putText(out_img, f'FPS: {fps}', (30, 30), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1, (0, 255, 0))
+    vw.write(out_img)
+    cv2.imshow('', out_img)
     cv2.waitKey(1)

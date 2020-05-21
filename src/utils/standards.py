@@ -17,7 +17,7 @@ def draw_image(rec, image, name=None):
     draw_landmark(image, rec)
 
     if name is not None:
-        cv2.putText(image, str(name), (x1, y1), cv2.FONT_ITALIC, 1, (255, 0, 0))
+        cv2.putText(image, str(name), (x1, y1), cv2.FONT_ITALIC, 1, (0, 255, 0))
 
 
 def draw_landmark(image, rec):
