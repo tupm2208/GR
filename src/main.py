@@ -1,42 +1,81 @@
 import cv2
 import time
+import numpy as np
 from src.config.initializer import Initializer
 from src.apis.trackers import Trackers
 from src.utils.image_processing import get_image_face_from_bboxes
-from src.utils.standards import load_vectors, draw_image
+from src.utils.standards import load_vectors, draw_image, handle_face_result
 from src.apis.face_categorizer import FaceCategorizer
 
 engine = Initializer()
 
-video = cv2.VideoCapture('/home/tupm/SSD/datasets/video_test/64888330720332379881.mp4')
+gate_video = cv2.VideoCapture('/home/tupm/SSD/datasets/video_test/test/56354369654362717692.mp4')
+counter_video = cv2.VideoCapture('/home/tupm/SSD/datasets/video_test/test/23920561543638656951.mp4')
 
 trackers = Trackers()
+counter_trackers = Trackers()
 data = load_vectors()
 face_categorizer = FaceCategorizer(data[0], data[1])
 
+data = load_vectors(0)
+cut_face_categorizer = FaceCategorizer(data[0], data[1])
+
+ret1 = True
+ret2 = True
+shape1 = None
 
 while True:
     t1 = time.time()
-    ret, image = video.read()
 
-    if not ret:
+    if ret1:
+        ret1, image = gate_video.read()
+
+    if not ret1:
+        image = np.zeros(shape1, dtype='uint8')
+        ret2, image2 = counter_video.read()
+    else:
+        shape1 = image.shape
+        image2 = np.zeros(shape1, dtype='uint8')
+
+    if not ret1 and not ret2:
         break
 
-    faces = engine.face_detector(image)
+    faces = engine.face_detector([image, image2])
+    gate_faces = faces[0]
+    counter_faces = faces[1]
 
-    face_images = get_image_face_from_bboxes(image, faces)
+    gate_face_images = get_image_face_from_bboxes(image, gate_faces)
+    counter_face_images = get_image_face_from_bboxes(image, counter_faces)
+
+    face_images = gate_face_images + counter_face_images
 
     vectors = engine.face_verifier.predict(face_images)
 
-    names, scores = face_categorizer.predict(vectors)
-    if len(names) != 0:
-        names[scores <= 0.9] = 'unknown'
+    gate_vectors = vectors[:len(gate_face_images)]
+    counter_vectors = vectors[len(gate_face_images):]
 
-    trackers.update(image, faces, names)
-    for tracker in trackers.track_list:
-        loc = tracker.current_location
-        draw_image(loc, image, tracker.get_identity())
+    gate_embeddings, gate_names = handle_face_result(gate_faces, face_categorizer, cut_face_categorizer, gate_vectors)
 
-    cv2.imshow('', image)
-    print(1/(time.time()-t1))
-    cv2.waitKey(1)
+    if ret1:
+
+        trackers.update(image, gate_faces, gate_embeddings, gate_names)
+        for tracker in trackers.track_list:
+            loc = tracker.current_location
+            draw_image(loc, image, tracker.get_identity())
+
+        cv2.imshow('', image)
+    else:
+        # gate_video = cv2.VideoCapture('/home/tupm/SSD/datasets/video_test/test/56354369654362717692.mp4')
+        # face_categorizer = trackers.recognizer
+        # ret1 = True
+        # continue
+        counter_embeddings, counter_names = handle_face_result(counter_faces, trackers.recognizer, trackers.recognizer,
+                                                               counter_vectors)
+        counter_trackers.update(image2, counter_faces, counter_embeddings, counter_names)
+        for tracker in counter_trackers.track_list:
+            loc = tracker.current_location
+            draw_image(loc, image2, tracker.get_identity())
+
+        cv2.imshow('', image2)
+    # print(1/(time.time()-t1))
+    cv2.waitKey(0)

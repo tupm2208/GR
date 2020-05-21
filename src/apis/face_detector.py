@@ -17,7 +17,7 @@ class FaceDetector:
         self.model = FaceBoxes()
         self.model.load_weights(model_path)
 
-    def __call__(self, image, score_threshold=MIN_FACE_SCORE):
+    def __call__(self, images, score_threshold=MIN_FACE_SCORE):
         """Detect faces.
 
         Arguments:
@@ -28,13 +28,25 @@ class FaceDetector:
             boxes: a float numpy array of shape [num_faces, 5].
 
         """
+        images = np.array(images)
+        if len(images.shape) == 3:
+            images = np.expand_dims(images, 0)
 
-        image_fornet, scale_x, scale_y = self.preprocess(image, 512, 512)
-
-        image_fornet = np.expand_dims(image_fornet, 0)
+        images_fornet = None
+        scale_xs = []
+        scale_ys = []
+        for image in images:
+            image_fornet, scale_x, scale_y = self.preprocess(image, 512, 512)
+            # images_fornet.append(image_fornet)
+            scale_xs.append(scale_x)
+            scale_ys.append(scale_y)
+            if images_fornet is None:
+                images_fornet = image_fornet
+            else:
+                images_fornet = np.concatenate([images_fornet, image_fornet])
 
         # start = time.time()
-        res = self.model.inference(image_fornet)
+        res = self.model.inference(images_fornet)
 
         # print('fps', 1 / (time.time() - start))
         # print('ms:', (time.time() - start)*1000)
@@ -42,10 +54,55 @@ class FaceDetector:
         scores = res['scores'].numpy()
         num_boxes = res['num_boxes'].numpy()
 
-        num_boxes = num_boxes[0]
-        boxes = boxes[0][:num_boxes]
+        results = []
+        for e in zip(scale_xs, scale_ys, boxes, scores, num_boxes):
+            scale_x, scale_y, box, score, num_box = e
+            results.append(self._handle_result(scale_x, scale_y, box, score, num_box, score_threshold))
 
-        scores = scores[0][:num_boxes]
+        return results
+        # num_boxes = num_boxes[0]
+        # boxes = boxes[0][:num_boxes]
+        #
+        # scores = scores[0][:num_boxes]
+        #
+        # to_keep = scores > score_threshold
+        # boxes = boxes[to_keep]
+        # scores = scores[to_keep]
+        #
+        # ###recorver to raw image
+        # scaler = np.array([512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x,
+        #                    512 / scale_y,
+        #                    512 / scale_x], dtype='float32')
+        # boxes = boxes * scaler
+        #
+        # scores = np.expand_dims(scores, 0).reshape([-1, 1])
+        #
+        # #####the tf.nms produce ymin,xmin,ymax,xmax,  swap it in to xmin,ymin,xmax,ymax
+        # for i in range(boxes.shape[0]):
+        #     boxes[i] = np.array([boxes[i][1], boxes[i][0],
+        #                          boxes[i][3], boxes[i][2],
+        #                          boxes[i][5], boxes[i][4],
+        #                          boxes[i][7], boxes[i][6],
+        #                          boxes[i][9], boxes[i][8],
+        #                          boxes[i][11], boxes[i][10],
+        #                          boxes[i][13], boxes[i][12]])
+        # return np.concatenate([boxes, scores], axis=1)
+
+    def _handle_result(self, scale_x, scale_y, boxes, scores, num_boxes, score_threshold):
+        boxes = boxes[:num_boxes]
+
+        scores = scores[:num_boxes]
 
         to_keep = scores > score_threshold
         boxes = boxes[to_keep]
@@ -79,6 +136,7 @@ class FaceDetector:
                                  boxes[i][9], boxes[i][8],
                                  boxes[i][11], boxes[i][10],
                                  boxes[i][13], boxes[i][12]])
+
         return np.concatenate([boxes, scores], axis=1)
 
     def preprocess(self, image, target_height, target_width, label=None):
@@ -98,7 +156,7 @@ class FaceDetector:
         h_, w_, _ = image.shape
         bimage[:h_, :w_, :] = image
 
-        return bimage, scale_x, scale_y
+        return np.expand_dims(bimage, 0), scale_x, scale_y
 
     def init_model(self, *args):
 

@@ -3,7 +3,7 @@ from sklearn.neighbors import KDTree
 from sklearn.decomposition import PCA
 
 
-class FaceCategorizer:
+class Tree:
     def __init__(self, vector_list, labels, embedding_size=None, top=10):
         self.vector_list = vector_list
         self.embedding_size = embedding_size
@@ -33,11 +33,9 @@ class FaceCategorizer:
         counts = []
         for e in selected_names:
             unique, count = np.unique(e, return_counts=True)
-            max_id = np.argmax(count)
-            names.append(unique[max_id])
-            counts.append(count[max_id])
+            names.append(unique[0])
+            counts.append(count[0])
 
-            print(unique, count)
         return np.array(names), np.array(counts)
 
     def predict(self, embedding):

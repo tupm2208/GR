@@ -8,7 +8,7 @@ del anchor_generator
 
 # face detector checkpoint path
 FACEBOXES_CKPT = '/home/tupm/HDD/projects/3dface/facial_verification_system/trained_model/faceboxes/epoch_299_train_lost_4.388730_val_loss3.445847/save'
-MIN_FACE_SCORE = 0.95
+MIN_FACE_SCORE = 0.9
 SCORE_THRESHOLD = 0.9
 
 # face verification ckpt path
@@ -18,3 +18,4 @@ TIME_TO_LIVE = 4  # fps
 BOUNDING_LIMIT = 20
 
 VECTORS_SET_PATH = '/home/tupm/HDD/projects/3dface/facial_verification_system/assets/embedding_data/data.pkl'
+AUG_VECTORS_SET_PATH = '/home/tupm/HDD/projects/3dface/facial_verification_system/assets/embedding_data/aug_data.pkl'

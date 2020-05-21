@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 import cv2
-from src.config.default import VECTORS_SET_PATH
+from src.config.default import VECTORS_SET_PATH, AUG_VECTORS_SET_PATH
 
 
 def to_xywh(bbox):
@@ -28,8 +28,9 @@ def draw_landmark(image, rec):
         cv2.circle(image, (x, y), 2, (0, 255, 0), 3)
 
 
-def load_vectors():
-    with open(VECTORS_SET_PATH, 'rb') as f:
+def load_vectors(ltype=1):
+    path = VECTORS_SET_PATH if ltype == 1 else AUG_VECTORS_SET_PATH
+    with open(path, 'rb') as f:
         data = pickle.load(f)
 
     return data['vectors'], data['labels']
@@ -99,3 +100,24 @@ def area(boxes):
 
     ymin, xmin, ymax, xmax = boxes[:4]
     return (ymax - ymin) * (xmax - xmin)
+
+
+def handle_face_result(faces, face_categorizer, cut_face_categorizer, vectors):
+    n_face = len(faces)
+    names1, scores1 = face_categorizer.predict(vectors[:n_face])
+    # names2, scores2 = cut_face_categorizer.predict(vectors[n_face:])
+    # names = np.concatenate([names1, names2])
+    # scores = np.concatenate([scores1, scores2])
+    names = np.concatenate([names1, names1])
+    scores = np.concatenate([scores1, scores1])
+    embeddings = list(zip(vectors[:n_face], vectors[n_face:]))
+    print(names1)
+    print(scores1)
+    if len(names) != 0:
+        names = names.tolist()
+        for idx in range(len(scores)):
+            if scores[idx] <= 0.9:
+                names[idx] = 'unknown'
+        names = list(zip(names[:n_face], names[n_face:]))
+
+    return embeddings, names

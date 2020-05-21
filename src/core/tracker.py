@@ -6,22 +6,44 @@ from src.config.default import TIME_TO_LIVE, BOUNDING_LIMIT
 
 
 class Tracker(correlation_tracker):
-    def __init__(self, bgr, location, identity):
+    def __init__(self, bgr, location, embeddings,identity):
         super().__init__()
         rgb = cv2.cvtColor(bgr, cv2.COLOR_RGB2BGR)
         location = np.array(location[:14], dtype=int)
-        self.ttl = 0
-        self.trace = [identity]
-        self.score = location[-1]
-        self._convert_ldm_to_scale(location)
-
-        self.track(rgb, location)
+        self._init_variable()
         self.img_h, self.img_w, _ = bgr.shape
+        # self.scores = [location[-1]]
+        self._convert_ldm_to_scale(location)
         self.current_location = location
-        self.origin_vectors = []
-        self.augmented_vectors = []
+        self._update_identity(identity)
+        self.track(rgb, location)
+        self._update_embeddings(embeddings)
 
-    def custom_update(self, bgr, location=None, identity=None):
+    def _init_variable(self):
+        self.ttl = 0
+        self.original_names = []
+        self.cut_names = []
+        self.origin_vectors = None
+        self.augmented_vectors = None
+
+    def _update_identity(self, identity):
+        # print(identity)
+        org_name, cut_name = identity
+        self.original_names.append(org_name)
+        self.cut_names.append(cut_name)
+
+    def _update_embeddings(self, embeddings):
+        origin, augmented = embeddings
+        origin = np.expand_dims(origin, 0)
+        augmented = np.expand_dims(augmented, 0)
+        if self.origin_vectors is None:
+            self.origin_vectors = origin
+            self.augmented_vectors = augmented
+        else:
+            self.origin_vectors = np.concatenate([self.origin_vectors, origin])
+            self.augmented_vectors = np.concatenate([self.augmented_vectors, augmented])
+
+    def custom_update(self, bgr, location=None, embeddings=None, identity=None):
         rgb = cv2.cvtColor(bgr, cv2.COLOR_RGB2BGR)
         if location is not None:
             location = np.array(location[:14], dtype=int)
@@ -36,7 +58,10 @@ class Tracker(correlation_tracker):
             self.update(rgb)
 
         if identity is not None:
-            self.trace.append(identity)
+            self._update_identity(identity)
+
+        if embeddings is not None:
+            self._update_embeddings(embeddings)
 
     def track(self, rgb, location):
         position = location[:4]
@@ -70,6 +95,30 @@ class Tracker(correlation_tracker):
         ldms = self._recover_ldm_from_scale(position)
         return np.concatenate([position.astype(int), ldms])
 
+    def get_hard_vectors(self, get_id_label):
+        name = self.get_identity()
+        # if name == 'trachpro':
+        #     return None
+        step = len(self.origin_vectors)//20
+        if name == 'unknown':
+            if step == 0:
+                return None
+            chosen_vectors = self.origin_vectors
+        else:
+            chosen_idxs = np.where(np.array(self.original_names) != name)
+            chosen_vectors = np.take(self.origin_vectors, chosen_idxs, axis=0)
+            chosen_vectors = np.squeeze(chosen_vectors, axis=0)
+            if min(len(chosen_vectors), 50) == 0:
+                return None
+            step = len(chosen_vectors)//min(len(chosen_vectors), 50)
+        step = 1
+        chosen_vectors = chosen_vectors[0::step]
+        print(chosen_vectors.shape, name)
+
+        identity = get_id_label() if name == 'unknown' else name
+
+        return chosen_vectors, [identity] * len(chosen_vectors)
+
     def did_not_match(self):
         self.ttl += 1
 
@@ -91,8 +140,13 @@ class Tracker(correlation_tracker):
         return True
 
     def get_identity(self):
-        unique, count = np.unique(self.trace, return_counts=True)
-        if len(unique) == 1 or unique[0] != 'unknown' or count[0]/len(count) >= 0.9:
+        trace = self.original_names
+        n_names = len(trace)
+        unique, count = np.unique(trace, return_counts=True)
+        order = np.argsort(count)[::-1]
+        count = np.take(count, order)
+        unique = np.take(unique, order)
+        if len(unique) == 1 or unique[0] != 'unknown' or count[0]/n_names >= 0.88:
             return unique[0]
         else:
             return unique[1]

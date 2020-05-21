@@ -1,4 +1,6 @@
+import numpy as np
 from src.core.tracker import Tracker
+from .face_categorizer import FaceCategorizer
 
 
 class Trackers:
@@ -6,14 +8,18 @@ class Trackers:
         self.track_list = []
         self.auto_increase = 0
         self.user_dict_vectors = {}
+        self.vector_list = None
+        self.label_list = []
+        self.recognizer = None
 
-    def update(self, bgr, locations, identities):
+    def update(self, bgr, locations, embeddings, identities):
         matched_idxs = []
 
         for track in self.track_list:
             location_idx = track.is_match(locations)
             if location_idx is not None:
-                track.custom_update(bgr, locations[location_idx], identities[location_idx])
+                # print(identities[location_idx])
+                track.custom_update(bgr, locations[location_idx], embeddings[location_idx], identities[location_idx])
                 matched_idxs.append(location_idx)
                 track.did_match()
             else:
@@ -22,14 +28,27 @@ class Trackers:
 
         for idx in reversed(range(len(self.track_list))):
             if not self.track_list[idx].is_valid():
+                # print(self.track_list[idx].origin_vectors.shape, len(self.track_list[idx].original_names))
+                vector_labels = self.track_list[idx].get_hard_vectors(self._get_new_id)
+
+                if vector_labels is not None:
+                    vectors, labels = vector_labels
+                    if self.vector_list is None:
+                        self.vector_list = vectors
+                    else:
+                        self.vector_list = np.concatenate([self.vector_list, vectors], axis=0)
+                    self.label_list.extend(labels)
+                    print(self.vector_list.shape)
+
+                    self.recognizer = FaceCategorizer(self.vector_list, self.label_list)
+
                 del self.track_list[idx]
 
         for i in range(len(locations)):
             if i not in matched_idxs:
                 identity = identities[i]
-                if identity is None or not identity:
-                    identity = self._get_new_id()
-                self.track_list.append(Tracker(bgr, locations[i], identity))
+
+                self.track_list.append(Tracker(bgr, locations[i], embeddings[i], identity))
 
     def _get_new_id(self):
         self.auto_increase += 1
