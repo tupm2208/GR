@@ -12,7 +12,6 @@ class Tracker(correlation_tracker):
         location = np.array(location[:14], dtype=int)
         self._init_variable()
         self.img_h, self.img_w, _ = bgr.shape
-        # self.scores = [location[-1]]
         self._convert_ldm_to_scale(location)
         self.current_location = location
         self._update_identity(identity)
@@ -23,25 +22,16 @@ class Tracker(correlation_tracker):
         self.ttl = 0
         self.original_names = []
         self.cut_names = []
-        self.origin_vectors = None
-        self.augmented_vectors = None
+        self.origin_vectors = np.empty((0, 512), dtype='float32')
 
     def _update_identity(self, identity):
-        # print(identity)
-        org_name, cut_name = identity
+        org_name = identity
         self.original_names.append(org_name)
-        self.cut_names.append(cut_name)
 
     def _update_embeddings(self, embeddings):
-        origin, augmented = embeddings
-        origin = np.expand_dims(origin, 0)
-        augmented = np.expand_dims(augmented, 0)
-        if self.origin_vectors is None:
-            self.origin_vectors = origin
-            self.augmented_vectors = augmented
-        else:
-            self.origin_vectors = np.concatenate([self.origin_vectors, origin])
-            self.augmented_vectors = np.concatenate([self.augmented_vectors, augmented])
+        origin = np.expand_dims(embeddings, 0)
+
+        self.origin_vectors = np.concatenate([self.origin_vectors, origin])
 
     def custom_update(self, bgr, location=None, embeddings=None, identity=None):
         rgb = cv2.cvtColor(bgr, cv2.COLOR_RGB2BGR)
@@ -97,8 +87,6 @@ class Tracker(correlation_tracker):
 
     def get_hard_vectors(self, get_id_label):
         name = self.get_identity()
-        # if name == 'trachpro':
-        #     return None
         step = len(self.origin_vectors)//20
         if name == 'unknown':
             if step == 0:

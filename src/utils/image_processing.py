@@ -44,19 +44,16 @@ def augment_face(face_image):
 def get_image_face_from_bboxes(image, bboxes, is_reduce=False):
 
     origin_face_images = []
-    augmented_face_images = []
 
     for e in bboxes:
         origin, augmented = preprocess(image, e[:4], e[4:14])
         if is_reduce:
             origin = resize_image(origin)
         origin_face_images.append(origin)
-        augmented_face_images.append(augmented)
 
     # if len(origin_face_images) != 0:
     #     cv2.imshow('origin', origin_face_images[0])
     #     cv2.waitKey(0)
-    origin_face_images.extend(augmented_face_images)
     return origin_face_images
 
 

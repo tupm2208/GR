@@ -60,44 +60,6 @@ class FaceDetector:
             results.append(self._handle_result(scale_x, scale_y, box, score, num_box, score_threshold))
 
         return results
-        # num_boxes = num_boxes[0]
-        # boxes = boxes[0][:num_boxes]
-        #
-        # scores = scores[0][:num_boxes]
-        #
-        # to_keep = scores > score_threshold
-        # boxes = boxes[to_keep]
-        # scores = scores[to_keep]
-        #
-        # ###recorver to raw image
-        # scaler = np.array([512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x,
-        #                    512 / scale_y,
-        #                    512 / scale_x], dtype='float32')
-        # boxes = boxes * scaler
-        #
-        # scores = np.expand_dims(scores, 0).reshape([-1, 1])
-        #
-        # #####the tf.nms produce ymin,xmin,ymax,xmax,  swap it in to xmin,ymin,xmax,ymax
-        # for i in range(boxes.shape[0]):
-        #     boxes[i] = np.array([boxes[i][1], boxes[i][0],
-        #                          boxes[i][3], boxes[i][2],
-        #                          boxes[i][5], boxes[i][4],
-        #                          boxes[i][7], boxes[i][6],
-        #                          boxes[i][9], boxes[i][8],
-        #                          boxes[i][11], boxes[i][10],
-        #                          boxes[i][13], boxes[i][12]])
-        # return np.concatenate([boxes, scores], axis=1)
 
     def _handle_result(self, scale_x, scale_y, boxes, scores, num_boxes, score_threshold):
         boxes = boxes[:num_boxes]
@@ -224,7 +186,7 @@ def draw_image(image, boxes):
 def test_image(path, face_detector):
     image = cv2.imread(path)
     result = face_detector(cv2.cvtColor(image, cv2.COLOR_RGB2BGR), 0.36)
-    image = draw_image(image, result)
+    image = draw_image(image, result[0])
     cv2.imshow('test', image)
     cv2.waitKey(0)
 
@@ -234,7 +196,7 @@ def test_video(vd, face_detector):
     while True:
         ret, image = video.read()
         result = face_detector(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
-        image = draw_image(image, result)
+        image = draw_image(image, result[0])
         cv2.imshow('test', image)
         cv2.waitKey(1)
 
@@ -244,6 +206,10 @@ if __name__ == '__main__':
     print(os. getcwd())
     # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     face_detector = FaceDetector('./trained_model/faceboxes/epoch_299_train_lost_4.388730_val_loss3.445847/save')
-    # test_image('/home/tupm/HDD/projects/3dface/Face-Recognition-with-InsightFace/datasets/test/hangout_with_friends.jpg', face_detector)
-    test_video('/home/tupm/SSD/datasets/video_test/Truyền File [17-05-2020 10_11]/40251493728313724542.mp4', face_detector)
+    from glob import glob
+    imgs = glob('/home/tupm/datasets/VN-celeb/156/*')
+    for img in imgs:
+        test_image(img, face_detector)
+    # test_image('/home/tupm/datasets/VN-celeb/156/5.png', face_detector)
+    # test_video('/home/tupm/SSD/datasets/video_test/Truyền File [17-05-2020 10_11]/40251493728313724542.mp4', face_detector)
     # print(result.shape)

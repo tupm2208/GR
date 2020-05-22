@@ -102,22 +102,12 @@ def area(boxes):
     return (ymax - ymin) * (xmax - xmin)
 
 
-def handle_face_result(faces, face_categorizer, cut_face_categorizer, vectors):
-    n_face = len(faces)
-    names1, scores1 = face_categorizer.predict(vectors[:n_face])
-    # names2, scores2 = cut_face_categorizer.predict(vectors[n_face:])
-    # names = np.concatenate([names1, names2])
-    # scores = np.concatenate([scores1, scores2])
-    names = np.concatenate([names1, names1])
-    scores = np.concatenate([scores1, scores1])
-    embeddings = list(zip(vectors[:n_face], vectors[n_face:]))
-    # print(names1)
-    # print(scores1)
+def handle_face_result(face_categorizer, vectors):
+    names, scores = face_categorizer.predict(vectors)
     if len(names) != 0:
         names = names.tolist()
         for idx in range(len(scores)):
             if scores[idx] <= 0.9:
                 names[idx] = 'unknown'
-        names = list(zip(names[:n_face], names[n_face:]))
 
-    return embeddings, names
+    return names

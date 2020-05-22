@@ -41,3 +41,4 @@ def ArcFaceModel(size=None, channels=3, name='arcface_model', embd_shape=512, w_
 if __name__ == '__main__':
     model = ArcFaceModel(112)
     model.load_weights('/home/tupm/HDD/projects/3dface/facial_verification_system/trained_model/arc_mbv2_ccrop/e_8_b_40000.ckpt')
+    model.save('/home/tupm/HDD/projects/3dface/facial_verification_system/trained_model/pb_model/')
