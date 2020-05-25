@@ -111,3 +111,9 @@ def handle_face_result(face_categorizer, vectors):
                 names[idx] = 'unknown'
 
     return names
+
+
+def draw_track_list(track_list, image):
+    for tracker in track_list:
+        loc = tracker.current_location
+        draw_image(loc, image, tracker.get_identity())

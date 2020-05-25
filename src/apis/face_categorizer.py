@@ -58,5 +58,5 @@ class FaceCategorizer:
 
     def _transpose_pca(self):
         pca = PCA(n_components=self.embedding_size)
-        pca.fit(self.embeddings)
+        pca.fit(self.vector_list)
         return pca

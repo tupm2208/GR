@@ -14,7 +14,7 @@ SCORE_THRESHOLD = 0.05
 # face verification ckpt path
 ARC_FACE_CKPT='/home/tupm/HDD/projects/3dface/facial_verification_system/trained_model/pb_model'
 
-TIME_TO_LIVE = 15  # fps
+TIME_TO_LIVE = 4  # fps
 BOUNDING_LIMIT = 20
 
 VECTORS_SET_PATH = '/home/tupm/HDD/projects/3dface/facial_verification_system/assets/embedding_data/data.pkl'

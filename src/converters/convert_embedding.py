@@ -19,7 +19,7 @@ def convert_image_to_vector(img_file):
 
 
 def get_vector():
-    image_files = glob('/home/tupm/HDD/projects/3dface/Face-Recognition-with-InsightFace/datasets/vn/*/*')
+    image_files = glob('/home/tupm/SSD/datasets/celebrity/main/train/*/*')
     vectors = None
     labels = []
 

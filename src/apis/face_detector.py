@@ -28,9 +28,9 @@ class FaceDetector:
             boxes: a float numpy array of shape [num_faces, 5].
 
         """
-        images = np.array(images)
-        if len(images.shape) == 3:
-            images = np.expand_dims(images, 0)
+        # images = np.array(images)
+        # if len(images.shape) == 3:
+        #     images = np.expand_dims(images, 0)
 
         images_fornet = None
         scale_xs = []

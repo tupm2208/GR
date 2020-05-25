@@ -46,7 +46,7 @@ def get_image_face_from_bboxes(image, bboxes, is_reduce=False):
     origin_face_images = []
 
     for e in bboxes:
-        origin, augmented = preprocess(image, e[:4], e[4:14])
+        origin = preprocess(image, e[:4], e[4:14])
         if is_reduce:
             origin = resize_image(origin)
         origin_face_images.append(origin)
@@ -105,5 +105,5 @@ def preprocess(img, bbox=None, landmark=None, image_size=(112, 112), **kwargs):
         # warped = imutils.resize(warped, 56)
         # warped = imutils.resize(warped, 112)
         # draw_landmark(warped, src)
-        augmented_face = augment_face(warped)
-        return warped, augmented_face
+        # augmented_face = augment_face(warped)
+        return warped
