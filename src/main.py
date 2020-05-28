@@ -3,6 +3,7 @@ import time
 import numpy as np
 from src.config.initializer import Initializer
 from src.apis.trackers import Trackers
+from src.apis.counter_trackers import CounterTrackers
 from src.utils.image_processing import get_image_face_from_bboxes
 from src.utils.standards import load_vectors, draw_image, handle_face_result, draw_track_list
 from src.apis.face_categorizer import FaceCategorizer
@@ -10,18 +11,18 @@ from src.apis.face_categorizer import FaceCategorizer
 engine = Initializer()
 # counter_video = cv2.VideoCapture('http://192.168.1.222:4747/video')
 # gate_video = cv2.VideoCapture('http://192.168.1.120:4747/video')
-gate_video = cv2.VideoCapture('assets/output_videos/24_05_2020_23_31_28/raw_gate.avi')
-counter_video = cv2.VideoCapture('assets/output_videos/24_05_2020_23_31_28/raw_counter.avi')
+gate_video = cv2.VideoCapture('/home/tupm/projects/GR/assets/test_videos/56354369654362717692.mp4')
+counter_video = cv2.VideoCapture('/home/tupm/projects/GR/assets/test_videos/23920561543638656951.mp4')
 
 trackers = Trackers()
-counter_trackers = Trackers()
+counter_trackers = CounterTrackers()
 data = load_vectors()
 face_categorizer = FaceCategorizer(data[0], data[1])
 
 
 is_record = False
 if is_record:
-    output_video_path = '/home/tupm/HDD/projects/3dface/facial_verification_system/assets/output_videos'
+    output_video_path = 'assets/output_videos'
     import os
     from datetime import datetime
     now = datetime.now()
@@ -35,15 +36,15 @@ if is_record:
     raw_counter_recorder = cv2.VideoWriter(os.path.join(output_path, 'raw_counter.avi'), fourcc, 30, recorder_shape)
     im_counter_recorder = cv2.VideoWriter(os.path.join(output_path, 'im_counter.avi'), fourcc, 30, recorder_shape)
 
-interval = 1
+interval = 3
 count = 0
 
 while True:
 
     # ret1, image = gate_video.read()
     # ret2, image2 = counter_video.read()
-    ret1, image = counter_video.read()
-    ret2, image2 = gate_video.read()
+    ret1, image = gate_video.read()
+    ret2, image2 = counter_video.read()
     # ret2, image2 = ret1, image.copy()
 
     if image is None or image2 is None:
