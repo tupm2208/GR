@@ -11,8 +11,8 @@ from src.apis.face_categorizer import FaceCategorizer
 engine = Initializer()
 # counter_video = cv2.VideoCapture('http://192.168.1.222:4747/video')
 # gate_video = cv2.VideoCapture('http://192.168.1.120:4747/video')
-gate_video = cv2.VideoCapture('/home/tupm/projects/GR/assets/test_videos/56354369654362717692.mp4')
-counter_video = cv2.VideoCapture('/home/tupm/projects/GR/assets/test_videos/23920561543638656951.mp4')
+gate_video = cv2.VideoCapture('assets/test_videos/56354369654362717692.mp4')
+counter_video = cv2.VideoCapture('assets/test_videos/23920561543638656951.mp4')
 
 trackers = Trackers()
 counter_trackers = CounterTrackers()
