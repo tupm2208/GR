@@ -59,14 +59,14 @@ class Trackers:
                 # print(self.track_list[idx].origin_vectors.shape, len(self.track_list[idx].original_names))
                 vector_labels = self.track_list[idx].get_hard_vectors(self._get_new_id)
                 if vector_labels is not None:
-                    self._check_duplicate_person(vector_labels)
+                    # self._check_duplicate_person(vector_labels)
                     vectors, labels = vector_labels
                     if self.vector_list is None:
-                        self.vector_list = vectors
+                        self.vector_list = vectors[:20]
                     else:
-                        self.vector_list = np.concatenate([self.vector_list, vectors], axis=0)
+                        self.vector_list = np.concatenate([self.vector_list, vectors[:20]], axis=0)
 
-                    self.label_list.extend(labels)
+                    self.label_list.extend(labels[:20])
                     # if self.auto_increase == labels[0]:
                     #     self.label_list.extend(labels)
                     #     print(self.vector_list.shape)

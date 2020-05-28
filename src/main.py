@@ -73,7 +73,7 @@ while True:
     gate_vectors = vectors[:len(gate_face_images)]
     counter_vectors = vectors[len(gate_face_images):]
 
-    gate_names = handle_face_result(face_categorizer, gate_vectors)
+    gate_names = handle_face_result(trackers.recognizer, gate_vectors)
     trackers.update(image, gate_faces, vectors[:len(gate_faces)], gate_names)
     draw_track_list(trackers.track_list, image)
     # out_img = image
