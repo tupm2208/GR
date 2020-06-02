@@ -86,8 +86,9 @@ class Tracker(correlation_tracker):
         return np.concatenate([position.astype(int), ldms])
 
     def get_hard_vectors(self, get_id_label):
+        new_resiger_num = 20
         name = self.get_identity()
-        step = len(self.origin_vectors)//20
+        step = len(self.origin_vectors)//new_resiger_num
         if name == 'unknown':
             if step == 0:
                 return None
@@ -96,12 +97,14 @@ class Tracker(correlation_tracker):
             chosen_idxs = np.where(np.array(self.original_names) != name)
             chosen_vectors = np.take(self.origin_vectors, chosen_idxs, axis=0)
             chosen_vectors = np.squeeze(chosen_vectors, axis=0)
-            if min(len(chosen_vectors), 50) == 0:
-                return None
-            step = len(chosen_vectors)//min(len(chosen_vectors), 50)
+
+            step = len(chosen_vectors)//new_resiger_num
         # step = 1
-        chosen_vectors = chosen_vectors[0::step]
-        # print(chosen_vectors.shape, name)
+        if step == 0:
+            return None
+
+        chosen_vectors = chosen_vectors[0::step][:20]
+        # print(name, chosen_vectors.shape)
 
         identity = get_id_label() if name == 'unknown' else name
 

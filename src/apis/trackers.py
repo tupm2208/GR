@@ -1,7 +1,7 @@
 import numpy as np
 from src.core.tracker import Tracker
 from .face_categorizer import FaceCategorizer
-from src.utils.standards import load_vectors, handle_face_result
+from src.utils.standards import load_vectors
 
 data = load_vectors()
 
@@ -13,14 +13,19 @@ class Trackers:
         self.user_dict_vectors = {}
         self.vector_list = data[0]
         self.label_list = data[1]
+        self.labels_map = data[2]
         self.recognizer = FaceCategorizer(self.vector_list, self.label_list)
+        self.current_id_num = max(list(self.labels_map.values()))
 
     def update(self, bgr, locations, embeddings, identities):
         matched_idxs = []
         unmatched_idxs = list(range(len(locations)))
+        self.first_tracker = None
 
         for track in self.track_list:
             location_idx = track.is_match(np.take(locations, unmatched_idxs, axis=0))
+            if self.first_tracker is None and location_idx == 0:
+                self.first_tracker = track
             if location_idx is not None:
                 idx = unmatched_idxs[location_idx]
                 del unmatched_idxs[location_idx]
@@ -38,20 +43,18 @@ class Trackers:
         self._create_new_trackers(locations, matched_idxs, identities, bgr, embeddings)
 
     def _get_new_id(self):
-        self.auto_increase += 1
-        return self.auto_increase
-
-    def _check_duplicate_person(self, vector_labels):
-        vectors, labels = vector_labels
-        checked_names = handle_face_result(self.recognizer, vectors[:10])
-        print(checked_names)
+        self.current_id_num += 1
+        return self.current_id_num
 
     def _create_new_trackers(self, locations, matched_idxs, identities, bgr, embeddings):
+
         for i in range(len(locations)):
             if i not in matched_idxs:
                 identity = identities[i]
-
-                self.track_list.append(Tracker(bgr, locations[i], embeddings[i], identity))
+                new_tracker = Tracker(bgr, locations[i], embeddings[i], identity)
+                if self.first_tracker == None:
+                    self.first_tracker = new_tracker
+                self.track_list.append(new_tracker)
 
     def _delete_tracker(self):
         for idx in reversed(range(len(self.track_list))):
@@ -62,15 +65,23 @@ class Trackers:
                     # self._check_duplicate_person(vector_labels)
                     vectors, labels = vector_labels
                     if self.vector_list is None:
-                        self.vector_list = vectors[:20]
+                        self.vector_list = vectors
                     else:
-                        self.vector_list = np.concatenate([self.vector_list, vectors[:20]], axis=0)
+                        self.vector_list = np.concatenate([self.vector_list, vectors], axis=0)
 
-                    self.label_list.extend(labels[:20])
-                    # if self.auto_increase == labels[0]:
-                    #     self.label_list.extend(labels)
-                    #     print(self.vector_list.shape)
+                    self.label_list.extend(labels)
 
                     self.recognizer = FaceCategorizer(self.vector_list, self.label_list)
 
                 del self.track_list[idx]
+
+    def update_name(self, idx, name):
+        self.labels_map[name] = idx
+
+    def update_id(self, cr_id, old_id):
+
+        for i in range(len(self.label_list)):
+            print(self.label_list[i], cr_id, self.label_list[i] == cr_id)
+            if self.label_list[i] == cr_id:
+                self.label_list[i] = old_id
+        self.recognizer.labels = self.label_list

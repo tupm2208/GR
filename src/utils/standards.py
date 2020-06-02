@@ -33,7 +33,7 @@ def load_vectors(ltype=1):
     with open(path, 'rb') as f:
         data = pickle.load(f)
 
-    return data['vectors'], data['labels']
+    return data['vectors'], data['labels'], data['labels_map']
 
 
 def l2_norm(x, axis=1):
@@ -113,7 +113,12 @@ def handle_face_result(face_categorizer, vectors):
     return names
 
 
-def draw_track_list(track_list, image):
+def draw_track_list(track_list, image, labels_map):
     for tracker in track_list:
         loc = tracker.current_location
-        draw_image(loc, image, tracker.get_identity())
+        identity = tracker.get_identity()
+        if identity != 'unknown':
+            if int(identity) in labels_map.values():
+                identity = list(labels_map.keys())[list(labels_map.values()).index(int(identity))]
+
+        draw_image(loc, image, identity)

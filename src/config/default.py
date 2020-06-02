@@ -1,4 +1,6 @@
 from src.models.facebox.anchor_generator import AnchorGenerator
+import sys
+
 
 feature_maps_size = [[32, 32], [16, 16], [8, 8]]
 
@@ -16,6 +18,12 @@ ARC_FACE_CKPT='trained_model/pb_model'
 
 TIME_TO_LIVE = 8  # fps
 BOUNDING_LIMIT = 20
+TRACKING_INTERVAL = 1
+IS_RECORD = False
 
 VECTORS_SET_PATH = 'assets/embedding_data/data.pkl'
 AUG_VECTORS_SET_PATH = 'assets/embedding_data/aug_data.pkl'
+
+COUNTER_STREAM = 'assets/output_videos/28_05_2020_15_59_31/raw_counter.avi'
+GATE_STREAM = 'assets/output_videos/28_05_2020_15_59_31/raw_gate.avi'
+
