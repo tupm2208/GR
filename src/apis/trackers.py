@@ -81,7 +81,6 @@ class Trackers:
     def update_id(self, cr_id, old_id):
 
         for i in range(len(self.label_list)):
-            print(self.label_list[i], cr_id, self.label_list[i] == cr_id)
             if self.label_list[i] == cr_id:
                 self.label_list[i] = old_id
         self.recognizer.labels = self.label_list

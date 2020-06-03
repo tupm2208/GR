@@ -135,9 +135,17 @@ class MainUi(object):
         self.timer = timer
 
     def toggle_status(self):
+
+        self.formLayoutWidget_2.setVisible(not self.is_updating)
+        self.pushButton.setVisible(not self.is_updating)
+        self.formLayoutWidget_3.setVisible(not self.is_updating)
+        self.pushButton_2.setVisible(not self.is_updating)
+
         if self.counter_trackers.first_tracker is not None:
             self.cr_track = self.counter_trackers.first_tracker
-            self.cr_id = self.cr_track.get_identity() + ''
+
+            self.cr_id = self.cr_track.get_identity()
+            self.cr_id = str(self.cr_id)
             if self.cr_id.isdigit():
                 self.cr_id = int(self.cr_id)
         self.is_updating = not self.is_updating
