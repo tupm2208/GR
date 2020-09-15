@@ -1,7 +1,9 @@
 import numpy as np
+import pickle
 from src.core.tracker import Tracker
 from .face_categorizer import FaceCategorizer
 from src.utils.standards import load_vectors
+from time import time
 
 data = load_vectors()
 
@@ -68,7 +70,7 @@ class Trackers:
                         self.vector_list = vectors
                     else:
                         self.vector_list = np.concatenate([self.vector_list, vectors], axis=0)
-
+                    # self.save_pkl(vectors, labels)
                     self.label_list.extend(labels)
 
                     self.recognizer = FaceCategorizer(self.vector_list, self.label_list)
@@ -84,3 +86,8 @@ class Trackers:
             if self.label_list[i] == cr_id:
                 self.label_list[i] = old_id
         self.recognizer.labels = self.label_list
+
+    def save_pkl(self, vectors, labels):
+        t = f"assets/embedding_data/{str(round(time() * 1000)) + '.pkl'}"
+        with open(t, 'wb') as f:
+            pickle.dump({'vectors': vectors, 'labels': labels, 'labels_map': labels}, f)

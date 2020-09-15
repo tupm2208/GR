@@ -13,23 +13,24 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class MainUi(object):
 
     def __init__(self):
-        self.is_updating = False
+        self.is_updating = True
+
         self.trackers = None
         self.counter_trackers = None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1021, 527)
+        MainWindow.resize(1021-214, 527)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.main_image = QtWidgets.QLabel(self.centralwidget)
-        self.main_image.setGeometry(QtCore.QRect(0, 0, 854, 480))
+        self.main_image.setGeometry(QtCore.QRect(0, 0, 854-214, 480))
         self.main_image.setObjectName("gate_label_image")
         self.main_face = QtWidgets.QLabel(self.centralwidget)
-        self.main_face.setGeometry(QtCore.QRect(870, 0, 112, 112))
+        self.main_face.setGeometry(QtCore.QRect(870-214, 0, 112, 112))
         self.main_face.setObjectName("label_7")
         self.formLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.formLayoutWidget_2.setGeometry(QtCore.QRect(860, 130, 131, 61))
+        self.formLayoutWidget_2.setGeometry(QtCore.QRect(860-214, 130, 131, 61))
         self.formLayoutWidget_2.setObjectName("formLayoutWidget_2")
         self.formLayout_2 = QtWidgets.QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -47,16 +48,16 @@ class MainUi(object):
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_2)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(860, 200, 141, 21))
+        self.pushButton.setGeometry(QtCore.QRect(860-214, 200, 141, 21))
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(860, 310, 141, 21))
+        self.pushButton_2.setGeometry(QtCore.QRect(860-214, 310, 141, 21))
         self.pushButton_2.setObjectName("pushButton_3")
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(860, 420, 141, 21))
+        self.pushButton_3.setGeometry(QtCore.QRect(860-214, 420, 141, 21))
         self.pushButton_3.setObjectName("pushButton_3")
         self.formLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
-        self.formLayoutWidget_3.setGeometry(QtCore.QRect(860, 240, 141, 67))
+        self.formLayoutWidget_3.setGeometry(QtCore.QRect(860-214, 240, 141, 67))
         self.formLayoutWidget_3.setObjectName("formLayoutWidget_3")
         self.formLayout_3 = QtWidgets.QFormLayout(self.formLayoutWidget_3)
         self.formLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -75,7 +76,7 @@ class MainUi(object):
         self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1021, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1021-214, 20))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -87,7 +88,7 @@ class MainUi(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Counter Camera"))
         self.main_image.setText(_translate("MainWindow", "TextLabel"))
         self.main_face.setText(_translate("MainWindow", "gate_human_face"))
         self.label_8.setText(_translate("MainWindow", "ID:"))
@@ -103,6 +104,7 @@ class MainUi(object):
         self.pushButton_3.clicked.connect(self.toggle_status)
         self.pushButton.clicked.connect(self.update_name)
         self.pushButton_2.clicked.connect(self.update_id)
+        self.toggle_status()
 
     def update_main_image(self, image):
         if self.is_updating:
@@ -141,7 +143,7 @@ class MainUi(object):
         self.formLayoutWidget_3.setVisible(not self.is_updating)
         self.pushButton_2.setVisible(not self.is_updating)
 
-        if self.counter_trackers.first_tracker is not None:
+        if self.counter_trackers is not None and self.counter_trackers.first_tracker is not None:
             self.cr_track = self.counter_trackers.first_tracker
 
             self.cr_id = self.cr_track.get_identity()

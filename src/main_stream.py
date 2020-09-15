@@ -54,12 +54,16 @@ class MainStream:
         self.count += 1
         # print(int(1 / (time.time() - t1)))
         gate_faces = faces[0]
+        gate_faces = [location for location in gate_faces if 100>location[2]-location[0]>30]
         counter_faces = faces[1]
 
         gate_face_images = get_image_face_from_bboxes(image, gate_faces)
         counter_face_images = get_image_face_from_bboxes(image2, counter_faces)
 
         face_images = gate_face_images + counter_face_images
+        # for iidx, f in enumerate(face_images):
+        #     n = f'/home/tupm/HDD/projects/3dface/facial_verification_system/result/saved/{int(time.time()*1000)}_{iidx}.jpg'
+        #     cv2.imwrite(n, f)
 
         vectors = engine.face_verifier.predict(face_images)
 
@@ -76,7 +80,7 @@ class MainStream:
             im_gate_recorder.write(image)
             im_counter_recorder.write(image2)
 
-        cv2.imshow('', image)
+        cv2.imshow('Gate Camera', image)
 
         return image, image2, counter_face_images[:1]
 

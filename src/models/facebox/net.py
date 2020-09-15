@@ -204,7 +204,7 @@ class FaceBoxesHead(tf.keras.Model):
 
     def __call__(self, fms, training=False):
         fm1, fm2, fm3 = fms
-
+        print(fm1.shape, fm2.shape, fm3.shape)
         reg_1 = self.conv_reg_1(fm1)
         reg_1 = tf.reshape(reg_1, ([-1, 32, 32, 21, 14]))
         reg_1 = tf.reshape(reg_1, ([-1, 32 * 32 * 21, 14]))
@@ -216,7 +216,7 @@ class FaceBoxesHead(tf.keras.Model):
         reg_3 = self.conv_reg_3(fm3)
         reg_3 = tf.reshape(reg_3, ([-1, 8, 8, 1, 14]))
         reg_3 = tf.reshape(reg_3, ([-1, 8 * 8, 14]))
-
+        print(reg_1.shape, reg_2.shape, reg_3.shape)
         reg = tf.concat([reg_1, reg_2, reg_3], axis=1, name='reg_concat')
 
         cls_1 = self.conv_cls_1(fm1)

@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("Counter Camera")
         MainWindow.resize(1021, 527)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("Counter Camera", "Counter Camera"))
         self.gate_label_image.setText(_translate("MainWindow", "TextLabel"))
         self.label_7.setText(_translate("MainWindow", "gate_human_face"))
         self.label_8.setText(_translate("MainWindow", "ID:"))

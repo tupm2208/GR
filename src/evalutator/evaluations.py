@@ -6,11 +6,11 @@ from src.config.initializer import Initializer
 from src.utils.standards import load_vectors
 from tqdm import tqdm
 
-image_paths = glob('/home/tupm/SSD/datasets/celebrity/main/test/*/*') + glob('/home/tupm/SSD/datasets/celebrity/main/val/*/*')
+image_paths = glob('/home/tupm/SSD/datasets/celebrity/main/test2/*/*')
 engine = Initializer()
 verifier = engine.face_verifier
 data = load_vectors()
-categorizer = FaceCategorizer(data[0], data[1], embedding_size=10)
+categorizer = FaceCategorizer(data[0], data[1], embedding_size=512)
 f = open('evaluate.txt', 'w+')
 correct = 0
 total = 0

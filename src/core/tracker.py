@@ -86,7 +86,7 @@ class Tracker(correlation_tracker):
         return np.concatenate([position.astype(int), ldms])
 
     def get_hard_vectors(self, get_id_label):
-        new_resiger_num = 20
+        new_resiger_num = 15
         name = self.get_identity()
         step = len(self.origin_vectors)//new_resiger_num
         if name == 'unknown':
@@ -137,7 +137,7 @@ class Tracker(correlation_tracker):
         order = np.argsort(count)[::-1]
         count = np.take(count, order)
         unique = np.take(unique, order)
-        if len(unique) == 1 or unique[0] != 'unknown' or count[0]/n_names >= 0.88:
+        if len(unique) == 1 or unique[0] != 'unknown' or count[0]/n_names >= 0.93:
             return unique[0]
         else:
             return unique[1]

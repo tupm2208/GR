@@ -46,6 +46,15 @@ if __name__ == '__main__':
     original_vectors, labels, labels_map = get_vector()
     with open(VECTORS_SET_PATH, 'wb') as f:
         pickle.dump({'vectors': original_vectors, 'labels': labels, 'labels_map': labels_map}, f)
+    import pandas as pd
+    print(original_vectors.shape, [e for e in labels_map.keys()])
+    df_main = pd.DataFrame(data=original_vectors)
+    df_label = pd.DataFrame(data=[e for e in labels_map.keys()])
+    df_main.to_csv('/home/tupm/HDD/projects/3dface/facial_verification_system/assets/data_frame/main.tsv', sep='\t',
+                   index=False)
+    df_label.to_csv('/home/tupm/HDD/projects/3dface/facial_verification_system/assets/data_frame/label.tsv', sep='\t',
+                    index=False)
+
     print(labels)
     print(labels_map)
     print(original_vectors.shape)

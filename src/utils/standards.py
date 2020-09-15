@@ -14,7 +14,7 @@ def draw_image(rec, image, name=None):
     x1, y1, x2, y2 = rec[:4]
 
     cv2.rectangle(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
-    draw_landmark(image, rec)
+    # draw_landmark(image, rec)
 
     if name is not None:
         cv2.putText(image, str(name), (x1, y1), cv2.FONT_ITALIC, 1, (0, 255, 0))
